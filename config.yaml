@@ -1,0 +1,7 @@
+#GENOME_PATH : "/nfs/leia/research/flicek/user/fnc-odompipe/lce-collaboration/genome_metadata/genomes/"
+#BAM_PATH : "/nfs/leia/research/flicek/user/fnc-odompipe/lce-collaboration/repository/merged_alignments/alignments_20171018/"
+#BIN_PATH : "/hps/nobackup2/flicek/user/cander21/dojo/bin"
+#STRAIN : "c3h"
+#GENOME : "mus_musculus/C3H_HeJ_v1_S288C/C3H_HeJ_v1_S288C.fa"
+#WRK_DIR : "/hps/nobackup2/flicek/user/cander21/dojo/SM"
+samples : ["93133_N1", "89985_N1"]
