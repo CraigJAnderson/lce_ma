@@ -23,6 +23,8 @@ rule all:
   CONTROL_BED_GZ = expand("ma/{strain}/{strain}_den.arc_filtered_control_sites.bed.gz", strain=config["STRAIN"]),
   MPILEUP_OUT = expand("ma/{strain}/{nod}/{nod}.mpileup", nod=samples, strain=config["STRAIN"]),
   ALLELE_COUNT = expand("ma/{strain}/{nod}/{nod}.allele_count.bed", nod=samples, strain=config["STRAIN"]),
+  PROPORTION_MULTIALLELIC_CONTROL_SITES = expand("ma/{strain}/{nod}/{nod}.control.map", nod=samples, strain=config["STRAIN"]),
+  PROPORTION_MULTIALLELIC = expand("ma/{strain}/{nod}/{nod}.map", nod=samples, strain=config["STRAIN"]),
 
 ruleorder : filter_variants > collect_control_coordinates > genotype > allele_count
 
@@ -64,3 +66,12 @@ rule allele_count:
   "ma/{strain}/{nod}/{nod}.allele_count.bed"
  shell:
   """python bin/mp_allele_counter.py {input} > {output}"""
+
+rule proportion_multiallelic:
+ input:
+  expand("ma/{strain}/{strain}_den.arc_filtered_control_sites.bed.gz", strain=config["STRAIN"])
+ output:
+  PROPORTION_MULTIALLELIC = "ma/{strain}/{nod}/{nod}.map",
+  PROPORTION_MULTIALLELIC_CONTROL_SITES = "ma/{strain}/{nod}/{nod}.control.map"
+ shell:
+  """ bin/map_props.sh {wildcards.nod} {wildcards.strain} {input} """
