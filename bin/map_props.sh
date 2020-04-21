@@ -5,6 +5,8 @@
 NOD=$1
 STRAIN=$2
 ALLSITES=$3
+CONTROL=$4
+MAP=$5
 
 BAS=$(cat ma/${STRAIN}/${NOD}/${NOD}.allele_count.bed | bedtools intersect -a stdin -b ma/${STRAIN}/${NOD}/${NOD}.bed | grep "BA" | wc -l)
 MAS=$(cat ma/${STRAIN}/${NOD}/${NOD}.allele_count.bed | bedtools intersect -a stdin -b ma/${STRAIN}/${NOD}/${NOD}.bed | grep "MA" | wc -l)
@@ -20,7 +22,7 @@ for x in {1..100}
  MAC=$(grep "MA" ma/${STRAIN}/${NOD}/tmp2.bed | wc -l)
  SUC=$((BAC+MAC))
  PROPC=$(echo $SUC | X=$SUM awk -F"\t" '{print ($1/ENVIRON["X"])}')
- echo $BAC $MAC $PROPC >> ma/${STRAIN}/${NOD}/${NOD}.control.map
+ echo $BAC $MAC $PROPC >> $CONTROL
  unset PROPC
  unset MAC
  unset BAC 
@@ -29,5 +31,5 @@ done
 
 PROPC2=$(cat  ma/${STRAIN}/${NOD}/${NOD}.control.map | awk '{sum+=$3} END {print sum/NR}')
 rm ma/${STRAIN}/${NOD}/tmp2.bed && rm ma/${STRAIN}/${NOD}/tmp.bed && rm ma/${STRAIN}/${NOD}/${NOD}.control.map
-echo $MAS $BAS $PROPM $PROPC2 > ma/${STRAIN}/${NOD}/${NOD}.map
+echo $MAS $BAS $PROPM $PROPC2 > $MAP
 ###endofscript###

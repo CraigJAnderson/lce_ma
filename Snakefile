@@ -23,10 +23,11 @@ rule all:
   CONTROL_BED_GZ = expand("ma/{strain}/{strain}_den.arc_filtered_control_sites.bed.gz", strain=config["STRAIN"]),
   MPILEUP_OUT = expand("ma/{strain}/{nod}/{nod}.mpileup", nod=samples, strain=config["STRAIN"]),
   ALLELE_COUNT = expand("ma/{strain}/{nod}/{nod}.allele_count.bed", nod=samples, strain=config["STRAIN"]),
-  PROPORTION_MULTIALLELIC_CONTROL_SITES = expand("ma/{strain}/{nod}/{nod}.control.map", nod=samples, strain=config["STRAIN"]),
+  PROPORTION_MULTIALLELIC_CONTROL_SITES = expand("ma/{strain}/{nod}/{nod}.control_map", nod=samples, strain=config["STRAIN"]),
   PROPORTION_MULTIALLELIC = expand("ma/{strain}/{nod}/{nod}.map", nod=samples, strain=config["STRAIN"]),
+  NOD_VARIANT_BED = expand("ma/{strain}/{nod}/{nod}.bed", nod=samples, strain=config["STRAIN"]),
 
-ruleorder : filter_variants > collect_control_coordinates > genotype > allele_count
+ruleorder : filter_variants > collect_control_coordinates > genotype > allele_count > proportion_multiallelic
 
 rule filter_variants:
  output: 
@@ -38,14 +39,14 @@ rule filter_variants:
 
 rule collect_control_coordinates:
  input:
-  expand("geno/"+"{strain}"+"/{nod}_arc_filtered.nodMat", nod=samples, strain=config["STRAIN"])
+  VARIANTS =expand("geno/"+"{strain}"+"/{nod}_arc_filtered.nodMat", nod=samples, strain=config["STRAIN"])
  output:
   CONTROL_POS = "ma/{strain}/{strain}_den.arc_filtered_control_sites.pos",
   CONTROL_BED = "ma/{strain}/{strain}_den.arc_filtered_control_sites.bed",
   CONTROL_BED_GZ = "ma/{strain}/{strain}_den.arc_filtered_control_sites.bed.gz"
  shell:
-  """ cat {input} | awk '{{print $1"\t"$2}}' FS="[_,]" | sort -k 1,1 -k2,2n -u > {output.CONTROL_POS} ; """
-  """ cat {input} | awk '{{print $1"\t"$2"\t"$2+1}}' FS="[_,]" | sort -k 1,1 -k2,2n -u > {output.CONTROL_BED} ; """
+  """ cat {input.VARIANTS} | awk '{{print $1"\t"$2}}' FS="[_,]" | sort -k 1,1 -k2,2n -u > {output.CONTROL_POS} ; """
+  """ cat {input.VARIANTS} | awk '{{print $1"\t"$2"\t"$2+1}}' FS="[_,]" | sort -k 1,1 -k2,2n -u > {output.CONTROL_BED} ; """
   """ bgzip -c {output.CONTROL_BED} > {output.CONTROL_BED_GZ} """
 
 rule genotype:
@@ -69,9 +70,13 @@ rule allele_count:
 
 rule proportion_multiallelic:
  input:
-  expand("ma/{strain}/{strain}_den.arc_filtered_control_sites.bed.gz", strain=config["STRAIN"])
+  VARIANTS = expand("geno/{strain}/{nod}_arc_filtered.nodMat", nod=samples, strain=config["STRAIN"]),
+  CONTROL_SITES = expand("ma/{strain}/{strain}_den.arc_filtered_control_sites.bed.gz", strain=config["STRAIN"])
  output:
+  VARIANT_BED = "ma/{strain}/{nod}/{nod}.bed",
   PROPORTION_MULTIALLELIC = "ma/{strain}/{nod}/{nod}.map",
-  PROPORTION_MULTIALLELIC_CONTROL_SITES = "ma/{strain}/{nod}/{nod}.control.map"
+  PROPORTION_MULTIALLELIC_CONTROL_SITES = "ma/{strain}/{nod}/{nod}.control_map"
  shell:
-  """ bin/map_props.sh {wildcards.nod} {wildcards.strain} {input} """
+  """ cat {input.VARIANTS} | awk -F",|_" '{{print $1"\t"$2"\t"$2+1}}' | sort -k 1,1 -k2,2n > {output.VARIANT_BED} ; """
+  """ bin/map_props.sh {wildcards.nod} {wildcards.strain} {input.CONTROL_SITES} {output.PROPORTION_MULTIALLELIC_CONTROL_SITES} {output.PROPORTION_MULTIALLELIC} """
+

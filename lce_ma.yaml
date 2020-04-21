@@ -1,0 +1,5 @@
+name: ENVNAME
+channels:
+  - defaults
+prefix: /hps/nobackup2/flicek/user/cander21/bin/anaconda/envs/ENVNAME
+
