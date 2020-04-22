@@ -29,7 +29,7 @@ for x in {1..100}
  unset SUC 
 done 
 
-PROPC2=$(cat  ma/${STRAIN}/${NOD}/${NOD}.control.map | awk '{sum+=$3} END {print sum/NR}')
-rm ma/${STRAIN}/${NOD}/tmp2.bed && rm ma/${STRAIN}/${NOD}/tmp.bed && rm ma/${STRAIN}/${NOD}/${NOD}.control.map
-echo $MAS $BAS $PROPM $PROPC2 > $MAP
+PROPC2=$(cat  $CONTROL | awk '{sum+=$3} END {print sum/NR}')
+rm ma/${STRAIN}/${NOD}/tmp2.bed && rm ma/${STRAIN}/${NOD}/tmp.bed && rm $CONTROL
+echo $NOD $MAS $BAS $PROPM $PROPC2 > $MAP
 ###endofscript###

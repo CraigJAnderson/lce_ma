@@ -1,6 +1,0 @@
-1	149657996	g	51	...,,,...,,,,,,,,,.,.,,....,,.,.,..,.,.,,,.+1C.+1C,+1c..,..,	K7KFKKKKKKKKKKKKAKKFKKKFKKKKKKKKKKKKKKKKFFKK<KKFKKK
-2	103177	T	41	..,,.,.............,...+1C...,,,....,,.....^].	AFK<KAAAKKKFAKKKKKKAAKKKKK<77KKKK77KKKKFA
-2	146255066	T	48	...,....,.,.,,,.....,+4gata.,+4gata.+4GATA.+4GATA,+4gata.+4GATA.+4GATA.,+4gata,,+4gata.+4GATA.+4GATA.+4GATA,+4gata.+4GATA.+4GATA.+4GATA.+4GATA,+4gata.+4GATA.+4GATA.+4GATA.+4GATA.+4GATA,+4gata,+4gata	<<KKFKFKKKKKKAKFAKFF????????A?E<????@???<@????7?
-3	82077320	A	54	.$..,..,...,.,.,,.,+1t.,.,,.,,,,,,.,.....,,..,,,,,,..,,.,,	;<7KAKK<K<KAKKK<K7K<KKKKKAKKKKKKKKKFKKKKK<AKKAAKKFKFFK
-3	86296415	C	18	..,,,..,...+10AGAGAGAGAG.+10AGAGAGAGAG,+10agagagagag.+10AGAGAGAGAG..+10AGAGAGAGAG.,	KKKKKKFKK:KKK<7KKK
-3	119959006	T	33	..,..,..,,.,,.,+2ca,....,-2ca.....,...,..	KFKAKKKKAKKA7KAKKKFKKKFKKKKKKK7FA
