@@ -23,17 +23,17 @@ rule all:
   CONTROL_BED_GZ = expand("ma/{strain}/{strain}_den.arc_filtered_control_sites.bed.gz", strain=config["STRAIN"]),
   MPILEUP_OUT = expand("ma/{strain}/{nod}/{nod}.mpileup", nod=samples, strain=config["STRAIN"]),
   ALLELE_COUNT = expand("ma/{strain}/{nod}/{nod}.allele_count.bed", nod=samples, strain=config["STRAIN"]),
-  PROPORTION_MULTIALLELIC_CONTROL_SITES = expand("ma/{strain}/{nod}/{nod}.control_map", nod=samples, strain=config["STRAIN"]),
+  #PROPORTION_MULTIALLELIC_CONTROL_SITES = expand("ma/{strain}/{nod}/{nod}.control_map", nod=samples, strain=config["STRAIN"]),
   PROPORTION_MULTIALLELIC = expand("ma/{strain}/{nod}/{nod}.map", nod=samples, strain=config["STRAIN"]),
-  ALL_PROPORTIONS = expand("ma/{strain}/{strain}.all_map", strain=config["STRAIN"]),
+  ALL_PROPORTIONS = expand("ma/{strain}/{strain}.multi_allelic_proportions", strain=config["STRAIN"]),
   NOD_VARIANT_BED = expand("ma/{strain}/{nod}/{nod}.bed", nod=samples, strain=config["STRAIN"]),
   PROXIMAL_VARIANTS = expand("ma/{strain}/{nod}/{nod}.prox.pos", nod=samples, strain=config["STRAIN"]),
   PROXIMAL_VARIANT_MPILEUP = expand("ma/{strain}/{nod}/{nod}.prox.mpileup", nod=samples, strain=config["STRAIN"]),
   ALLELIC_COMBINATINS = expand("ma/{strain}/{nod}/{nod}.MA_combos", nod=samples, strain=config["STRAIN"]),
   COMBINATION_CLASS_COUNT = expand("ma/{strain}/{nod}/{nod}.combos_txt", nod=samples, strain=config["STRAIN"]),
-#  ALL_COMBOS = expand("ma/{strain}/{strain}.all_combos.txt", nod=samples, strain=config["STRAIN"]),
+#  ALL_COMBOS = expand("ma/{strain}/{strain}.all_combos_txt", strain=config["STRAIN"]),
 
-ruleorder : filter_variants > collect_control_coordinates > genotype > allele_count > proportion_multiallelic
+ruleorder : filter_variants > collect_control_coordinates > genotype > allele_count > proportion_multiallelic > all_proportions > multiallelic_combinations > allelic_combination_grader
 
 rule filter_variants:
  output: 
@@ -81,18 +81,17 @@ rule proportion_multiallelic:
  output:
   VARIANT_BED = "ma/{strain}/{nod}/{nod}.bed",
   PROPORTION_MULTIALLELIC = "ma/{strain}/{nod}/{nod}.map",
-  PROPORTION_MULTIALLELIC_CONTROL_SITES = "ma/{strain}/{nod}/{nod}.control_map"
  shell:
   """ cat {input.VARIANTS} | awk -F",|_" '{{print $1"\t"$2"\t"$2+1}}' | sort -k 1,1 -k2,2n > {output.VARIANT_BED} ; """
-  """ bin/map_props.sh {wildcards.nod} {wildcards.strain} {input.CONTROL_SITES} {output.PROPORTION_MULTIALLELIC_CONTROL_SITES} {output.PROPORTION_MULTIALLELIC} """
+  """ bin/map_props.sh {wildcards.nod} {wildcards.strain} {input.CONTROL_SITES} ma/{wildcards.strain}/{wildcards.nod}/{wildcards.nod}.control_map {output.PROPORTION_MULTIALLELIC} """
 
 rule all_proportions:
  input:
-  expand("ma/{strain}/{nod}/{nod}.map", nod=samples, strain=config["STRAIN"])
+  lambda wildcards : expand("ma/{strain}/{nod}/{nod}.map", nod=samples, strain=config["STRAIN"])
  output:
-  "ma/{strain}/{strain}.all_map"
+  "ma/{strain}/{strain}.multi_allelic_proportions"
  shell:
-  """ cat {input} >> {output} """
+  """ cat {input} > {output} """
 
 rule multiallelic_combinations:
  params:
@@ -107,8 +106,9 @@ rule multiallelic_combinations:
 
 rule allelic_combination_grader:
  input:
-  "ma/{strain}/{nod}/{nod}.MA_combos"
+  MA_COMBINATIONS = "ma/{strain}/{nod}/{nod}.MA_combos",
+  MAP = "ma/{strain}/{strain}.multi_allelic_proportions"
  output:
   IND_COMBOS = "ma/{strain}/{nod}/{nod}.combos_txt",
  shell:
-  """ VAR=$(egrep $'\t100\t|\t111\t|\t101\t|\t110\t' {input} | awk '{{if ($5 <=150) {{print $0}}}}' | awk '{{if ($5 >=3) {{print $0}}}}' | awk -F"\t" '{{print $2" "$4" "$8}}' | awk '{{ gsub("[(),0-9\047 ]","",$0); print $0 }}'| sed 's/.\{{2\}}/&,/g'| sed 's/./&,/1'| sed -r 's/,/ /' | sed -r 's/,/ /' | sed 's/,$//g' | python bin/allelic_combination_grader.py | cat - bin/allelic_combination_grades.txt | sed '/^$/d' | sort -k2,2 | uniq -c | egrep -v " 0$" | awk '{{print $1}}' | tr '\n' ' ' | awk '{{print $1-1"\t"$2-1"\t"$3-1"\t"$4-1"\t"$5-1"\t"(($3-1)+($4-1)+($5-1))/(($1-1)+($2-1)+($3-1)+($4-1)+($5-1))}}') ; VAR2=$(grep "{wildcards.nod} " ma/c3h/c3h.all_map | awk '{{print $4}}') ; echo {wildcards.nod} $VAR $VAR2 | awk -F" " '{{ if ($7 != -1) print $0}}' >> {output.IND_COMBOS} ; """
+  """ VAR=$(egrep $'\t100\t|\t111\t|\t101\t|\t110\t' {input.MA_COMBINATIONS} | awk '{{if ($5 <=150) {{print $0}}}}' | awk '{{if ($5 >=3) {{print $0}}}}' | awk -F"\t" '{{print $2" "$4" "$8}}' | awk '{{ gsub("[(),0-9\\047 ]","",$0); print $0 }}'| sed 's/.\{{2\}}/&,/g'| sed 's/./&,/1'| sed -r 's/,/ /' | sed -r 's/,/ /' | sed 's/,$//g' | python bin/allelic_combination_grader.py | cat - bin/allelic_combination_grades.txt | sed '/^$/d' | sort -k2,2 | uniq -c | egrep -v " 0$" | awk '{{print $1}}' | tr '\n' ' ' | awk '{{print $1-1"\t"$2-1"\t"$3-1"\t"$4-1"\t"$5-1"\t"(($3-1)+($4-1)+($5-1))/(($1-1)+($2-1)+($3-1)+($4-1)+($5-1))}}') ; VAR2=$(grep '{wildcards.nod} ' {input.MAP} | awk '{{print $4}}') ; echo {wildcards.nod} $VAR $VAR2 | awk -F" " '{{ if ($7 != -1) print $0}}' > {output.IND_COMBOS} """
