@@ -7,7 +7,7 @@ configfile : "config.yaml"
 
 import pandas as pd
 sample_names = pd.read_table(config["SAMPLE_LIST"],sep=" ",header=None)
-sample_names.columns = ['bam','nod','NA']
+sample_names.columns = ['bam','nod']
 samples= list(sample_names.nod)
 bam_names = []
 for x in list(sample_names.bam):
@@ -76,6 +76,7 @@ rule allele_count:
 
 rule proportion_multiallelic:
  input:
+  MPILEUP = expand("ma/{strain}/{nod}/{nod}.mpileup", nod=samples, strain=config["STRAIN"]),
   VARIANTS = expand("geno/{strain}/{nod}_arc_filtered.nodMat", nod=samples, strain=config["STRAIN"]),
   CONTROL_SITES = expand("ma/{strain}/{strain}_den.arc_filtered_control_sites.bed.gz", strain=config["STRAIN"])
  output:
