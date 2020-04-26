@@ -8,16 +8,16 @@ ALLSITES=$3
 CONTROL=$4
 MAP=$5
 
-BAS=$(cat ma/${STRAIN}/${NOD}/${NOD}.allele_count.bed | bedtools intersect -a stdin -b ma/${STRAIN}/${NOD}/${NOD}.bed | grep "BA" | wc -l)
-MAS=$(cat ma/${STRAIN}/${NOD}/${NOD}.allele_count.bed | bedtools intersect -a stdin -b ma/${STRAIN}/${NOD}/${NOD}.bed | grep "MA" | wc -l)
+BAS=$(cat ma/${STRAIN}/${NOD}/${NOD}.allele_count_bed | bedtools intersect -a stdin -b ma/${STRAIN}/${NOD}/${NOD}.variant_bed | grep "BA" | wc -l)
+MAS=$(cat ma/${STRAIN}/${NOD}/${NOD}.allele_count_bed | bedtools intersect -a stdin -b ma/${STRAIN}/${NOD}/${NOD}.variant_bed | grep "MA" | wc -l)
 SUM=$((BAS+MAS))
 PROPM=$(echo $MAS | X=$SUM awk -F"\t" '{print ($1/ENVIRON["X"])}')
 
-zcat $ALLSITES | bedtools subtract -a stdin -b ma/${STRAIN}/${NOD}/${NOD}.bed > ma/${STRAIN}/${NOD}/tmp.bed
+zcat $ALLSITES | bedtools subtract -a stdin -b ma/${STRAIN}/${NOD}/${NOD}.variant_bed > ma/${STRAIN}/${NOD}/tmp.bed
 
 for x in {1..100} 
  do
- shuf -n $SUM ma/${STRAIN}/${NOD}/tmp.bed | bedtools intersect -a stdin -b ma/${STRAIN}/${NOD}/${NOD}.allele_count.bed -wb > ma/${STRAIN}/${NOD}/tmp2.bed
+ shuf -n $SUM ma/${STRAIN}/${NOD}/tmp.bed | bedtools intersect -a stdin -b ma/${STRAIN}/${NOD}/${NOD}.allele_count_bed -wb > ma/${STRAIN}/${NOD}/tmp2.bed
  BAC=$(grep "BA" ma/${STRAIN}/${NOD}/tmp2.bed | wc -l)
  MAC=$(grep "MA" ma/${STRAIN}/${NOD}/tmp2.bed | wc -l)
  SUC=$((BAC+MAC))

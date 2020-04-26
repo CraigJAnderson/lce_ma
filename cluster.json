@@ -1,0 +1,64 @@
+{
+    "__default__" :
+    {
+        "run_time"  : "48:00",
+        "memory"    : "16000",
+        "sharedmem" : "1",
+        "output"    : "/hps/nobackup2/flicek/user/cander21/dojo/SM/logs/",
+        "error"     : "/hps/nobackup2/flicek/user/cander21/dojo/SM/logs/"
+    },
+
+    "filter_variants" :
+    {
+        "memory"    : "2000",
+        "run_time"  : "00:30",
+        "sharedmem" : "1",
+        "output"    : "/hps/nobackup2/flicek/user/cander21/dojo/SM/logs/",
+        "error"     : "/hps/nobackup2/flicek/user/cander21/dojo/SM/logs/"
+    },
+
+    "collect_control_coordinates" :
+    {
+        "memory"    : "2000",
+        "run_time"  : "00:30",
+        "sharedmem" : "1",
+        "output"    : "/hps/nobackup2/flicek/user/cander21/dojo/SM/logs/",
+        "error"     : "/hps/nobackup2/flicek/user/cander21/dojo/SM/logs/"
+    },
+
+    "genotype" :
+    {
+        "memory"    : "15000",
+        "run_time"  : "25:00",
+        "sharedmem" : "1",
+        "output"    : "/hps/nobackup2/flicek/user/cander21/dojo/SM/logs/",
+        "error"     : "/hps/nobackup2/flicek/user/cander21/dojo/SM/logs/"
+    },
+
+    "proportion_multiallelic" :
+    {
+        "memory"    : "4000",
+        "run_time"  : "04:30",
+        "sharedmem" : "1",
+        "output"    : "/hps/nobackup2/flicek/user/cander21/dojo/SM/logs/",
+        "error"     : "/hps/nobackup2/flicek/user/cander21/dojo/SM/logs/"
+    }
+
+    "allele_count" :
+    {
+        "memory"    : "15000",
+        "run_time"  : "25:00",
+        "sharedmem" : "1",
+        "output"    : "/hps/nobackup2/flicek/user/cander21/dojo/SM/logs/",
+        "error"     : "/hps/nobackup2/flicek/user/cander21/dojo/SM/logs/"
+    }
+
+    "multiallelic_combinations" :
+    {
+        "memory"    : "4000",
+        "run_time"  : "04:00",
+        "sharedmem" : "1",
+        "output"    : "/hps/nobackup2/flicek/user/cander21/dojo/SM/logs/",
+        "error"     : "/hps/nobackup2/flicek/user/cander21/dojo/SM/logs/"
+    }
+}

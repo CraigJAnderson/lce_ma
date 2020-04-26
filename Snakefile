@@ -19,19 +19,17 @@ sample_linked_bams = dict(zip(samples, bam_names))
 rule all:
  input: 
   SAMPLE_NAMES = expand("geno/{strain}/{nod}_arc_filtered.nodMat", nod=samples, strain=config["STRAIN"]),
-  CONTROL_POS = expand("ma/{strain}/{strain}_den.arc_filtered_control_sites.pos", strain=config["STRAIN"]),
-  CONTROL_BED_GZ = expand("ma/{strain}/{strain}_den.arc_filtered_control_sites.bed.gz", strain=config["STRAIN"]),
-  MPILEUP_OUT = expand("ma/{strain}/{nod}/{nod}.mpileup", nod=samples, strain=config["STRAIN"]),
-  ALLELE_COUNT = expand("ma/{strain}/{nod}/{nod}.allele_count.bed", nod=samples, strain=config["STRAIN"]),
-  #PROPORTION_MULTIALLELIC_CONTROL_SITES = expand("ma/{strain}/{nod}/{nod}.control_map", nod=samples, strain=config["STRAIN"]),
+  CONTROL_POS = expand("ma/{strain}/{strain}.arc_filtered_control_sites.pos", strain=config["STRAIN"]),
+  CONTROL_BED_GZ = expand("ma/{strain}/{strain}.arc_filtered_control_sites.bed.gz", strain=config["STRAIN"]),
+#  MPILEUP_OUT = "ma/{strain}/{nod}/{nod}.mpileup",
+  ALLELE_COUNT = expand("ma/{strain}/{nod}/{nod}.allele_count_bed",nod=samples, strain=config["STRAIN"]),
   PROPORTION_MULTIALLELIC = expand("ma/{strain}/{nod}/{nod}.map", nod=samples, strain=config["STRAIN"]),
   ALL_PROPORTIONS = expand("ma/{strain}/{strain}.multi_allelic_proportions", strain=config["STRAIN"]),
-  NOD_VARIANT_BED = expand("ma/{strain}/{nod}/{nod}.bed", nod=samples, strain=config["STRAIN"]),
-  PROXIMAL_VARIANTS = expand("ma/{strain}/{nod}/{nod}.prox.pos", nod=samples, strain=config["STRAIN"]),
-  PROXIMAL_VARIANT_MPILEUP = expand("ma/{strain}/{nod}/{nod}.prox.mpileup", nod=samples, strain=config["STRAIN"]),
+  NOD_VARIANT_BED = expand("ma/{strain}/{nod}/{nod}.variant_bed", nod=samples, strain=config["STRAIN"]),
+  PROXIMAL_VARIANTS = expand("ma/{strain}/{nod}/{nod}.prox_pos", nod=samples, strain=config["STRAIN"]),
+  PROXIMAL_VARIANT_MPILEUP = expand("ma/{strain}/{nod}/{nod}.prox_mpileup", nod=samples, strain=config["STRAIN"]),
   ALLELIC_COMBINATINS = expand("ma/{strain}/{nod}/{nod}.MA_combos", nod=samples, strain=config["STRAIN"]),
   COMBINATION_CLASS_COUNT = expand("ma/{strain}/{nod}/{nod}.combos_txt", nod=samples, strain=config["STRAIN"]),
-#  ALL_COMBOS = expand("ma/{strain}/{strain}.all_combos_txt", strain=config["STRAIN"]),
 
 ruleorder : filter_variants > collect_control_coordinates > genotype > allele_count > proportion_multiallelic > all_proportions > multiallelic_combinations > allelic_combination_grader
 
@@ -45,11 +43,11 @@ rule filter_variants:
 
 rule collect_control_coordinates:
  input:
-  VARIANTS =expand("geno/"+"{strain}"+"/{nod}_arc_filtered.nodMat", nod=samples, strain=config["STRAIN"])
+  VARIANTS = expand("geno/{strain}/{nod}_arc_filtered.nodMat", nod=samples, strain=config["STRAIN"])
  output:
-  CONTROL_POS = "ma/{strain}/{strain}_den.arc_filtered_control_sites.pos",
-  CONTROL_BED = "ma/{strain}/{strain}_den.arc_filtered_control_sites.bed",
-  CONTROL_BED_GZ = "ma/{strain}/{strain}_den.arc_filtered_control_sites.bed.gz"
+  CONTROL_POS = "ma/{strain}/{strain}.arc_filtered_control_sites.pos",
+  CONTROL_BED = "ma/{strain}/{strain}.arc_filtered_control_sites.bed",
+  CONTROL_BED_GZ = "ma/{strain}/{strain}.arc_filtered_control_sites.bed.gz"
  shell:
   """ cat {input.VARIANTS} | awk '{{print $1"\t"$2}}' FS="[_,]" | sort -k 1,1 -k2,2n -u > {output.CONTROL_POS} ; """
   """ cat {input.VARIANTS} | awk '{{print $1"\t"$2"\t"$2+1}}' FS="[_,]" | sort -k 1,1 -k2,2n -u > {output.CONTROL_BED} ; """
@@ -57,7 +55,7 @@ rule collect_control_coordinates:
 
 rule genotype:
  input:
-  CONTROL_POS = "ma/{strain}/{strain}_den.arc_filtered_control_sites.pos",
+  CONTROL_POS = "ma/{strain}/{strain}.arc_filtered_control_sites.pos",
  params:
   GENOME = config["GENOME"],
   BAM = lambda wildcards : sample_linked_bams[wildcards.nod]
@@ -68,27 +66,28 @@ rule genotype:
 
 rule allele_count:
  input:
-  expand("ma/{strain}/{nod}/{nod}.mpileup", nod=samples, strain=config["STRAIN"])
+  "ma/{strain}/{nod}/{nod}.mpileup"
  output:
-  "ma/{strain}/{nod}/{nod}.allele_count.bed"
+  "ma/{strain}/{nod}/{nod}.allele_count_bed"
  shell:
   """python bin/mp_allele_counter.py {input} > {output}"""
 
 rule proportion_multiallelic:
  input:
-  MPILEUP = expand("ma/{strain}/{nod}/{nod}.mpileup", nod=samples, strain=config["STRAIN"]),
-  VARIANTS = expand("geno/{strain}/{nod}_arc_filtered.nodMat", nod=samples, strain=config["STRAIN"]),
-  CONTROL_SITES = expand("ma/{strain}/{strain}_den.arc_filtered_control_sites.bed.gz", strain=config["STRAIN"])
+  ALLELE_COUNT = "ma/{strain}/{nod}/{nod}.allele_count_bed",
+  MPILEUP = "ma/{strain}/{nod}/{nod}.mpileup",
+  VARIANTS = "geno/{strain}/{nod}_arc_filtered.nodMat",
+  CONTROL_SITES = "ma/{strain}/{strain}.arc_filtered_control_sites.bed.gz"
  output:
-  VARIANT_BED = "ma/{strain}/{nod}/{nod}.bed",
+  VARIANT_BED = "ma/{strain}/{nod}/{nod}.variant_bed",
   PROPORTION_MULTIALLELIC = "ma/{strain}/{nod}/{nod}.map",
  shell:
-  """ cat {input.VARIANTS} | awk -F",|_" '{{print $1"\t"$2"\t"$2+1}}' | sort -k 1,1 -k2,2n > {output.VARIANT_BED} ; """
+  """ awk -F",|_" '{{print $1"\t"$2"\t"$2+1}}' {input.VARIANTS} | sort -k 1,1 -k2,2n > {output.VARIANT_BED} ; """
   """ bin/map_props.sh {wildcards.nod} {wildcards.strain} {input.CONTROL_SITES} ma/{wildcards.strain}/{wildcards.nod}/{wildcards.nod}.control_map {output.PROPORTION_MULTIALLELIC} """
 
 rule all_proportions:
  input:
-  lambda wildcards : expand("ma/{strain}/{nod}/{nod}.map", nod=samples, strain=config["STRAIN"])
+  expand("ma/{strain}/{nod}/{nod}.map", nod=samples, strain=config["STRAIN"])
  output:
   "ma/{strain}/{strain}.multi_allelic_proportions"
  shell:
@@ -99,8 +98,8 @@ rule multiallelic_combinations:
   GENOME = config["GENOME"],
   BAM = lambda wildcards : sample_linked_bams[wildcards.nod]
  output:
-  PROXIMAL_VARIANTS = "ma/{strain}/{nod}/{nod}.prox.pos",
-  PROXIMAL_VARIANT_MPILEUP = "ma/{strain}/{nod}/{nod}.prox.mpileup",
+  PROXIMAL_VARIANTS = "ma/{strain}/{nod}/{nod}.prox_pos",
+  PROXIMAL_VARIANT_MPILEUP = "ma/{strain}/{nod}/{nod}.prox_mpileup",
   ALLELIC_COMBINATINS = "ma/{strain}/{nod}/{nod}.MA_combos"
  shell:
   """bin/combo_validation.sh {wildcards.strain} {params.BAM} {wildcards.nod} {params.GENOME} """
@@ -108,7 +107,7 @@ rule multiallelic_combinations:
 rule allelic_combination_grader:
  input:
   MA_COMBINATIONS = "ma/{strain}/{nod}/{nod}.MA_combos",
-  MAP = "ma/{strain}/{strain}.multi_allelic_proportions"
+  MAP = "ma/{strain}/{nod}/{nod}.map"
  output:
   IND_COMBOS = "ma/{strain}/{nod}/{nod}.combos_txt",
  shell:
