@@ -18,18 +18,18 @@ sample_linked_bams = dict(zip(samples, bam_names))
 
 rule all:
  input: 
-  SAMPLE_NAMES = expand("geno/{strain}/{nod}_arc_filtered.nodMat", nod=samples, strain=config["STRAIN"]),
+#  SAMPLE_NAMES = expand("geno/{strain}/{nod}_arc_filtered.nodMat", nod=samples, strain=config["STRAIN"]),
   CONTROL_POS = expand("ma/{strain}/{strain}.arc_filtered_control_sites.pos", strain=config["STRAIN"]),
   CONTROL_BED_GZ = expand("ma/{strain}/{strain}.arc_filtered_control_sites.bed.gz", strain=config["STRAIN"]),
 #  MPILEUP_OUT = "ma/{strain}/{nod}/{nod}.mpileup",
-  ALLELE_COUNT = expand("ma/{strain}/{nod}/{nod}.allele_count_bed",nod=samples, strain=config["STRAIN"]),
-  PROPORTION_MULTIALLELIC = expand("ma/{strain}/{nod}/{nod}.map", nod=samples, strain=config["STRAIN"]),
+#  ALLELE_COUNT = expand("ma/{strain}/{nod}/{nod}.allele_count_bed",nod=samples, strain=config["STRAIN"]),
+#  PROPORTION_MULTIALLELIC = expand("ma/{strain}/{nod}/{nod}.map", nod=samples, strain=config["STRAIN"]),
   ALL_PROPORTIONS = expand("ma/{strain}/{strain}.multi_allelic_proportions", strain=config["STRAIN"]),
-  NOD_VARIANT_BED = expand("ma/{strain}/{nod}/{nod}.variant_bed", nod=samples, strain=config["STRAIN"]),
-  PROXIMAL_VARIANTS = expand("ma/{strain}/{nod}/{nod}.prox_pos", nod=samples, strain=config["STRAIN"]),
-  PROXIMAL_VARIANT_MPILEUP = expand("ma/{strain}/{nod}/{nod}.prox_mpileup", nod=samples, strain=config["STRAIN"]),
-  ALLELIC_COMBINATINS = expand("ma/{strain}/{nod}/{nod}.MA_combos", nod=samples, strain=config["STRAIN"]),
-  COMBINATION_CLASS_COUNT = expand("ma/{strain}/{nod}/{nod}.combos_txt", nod=samples, strain=config["STRAIN"]),
+#  NOD_VARIANT_BED = expand("ma/{strain}/{nod}/{nod}.variant_bed", nod=samples, strain=config["STRAIN"]),
+#  PROXIMAL_VARIANTS = expand("ma/{strain}/{nod}/{nod}.prox_pos", nod=samples, strain=config["STRAIN"]),
+#  PROXIMAL_VARIANT_MPILEUP = expand("ma/{strain}/{nod}/{nod}.prox_mpileup", nod=samples, strain=config["STRAIN"]),
+  ALLELIC_COMBINATIONS = expand("ma/{strain}/{nod}/{nod}.MA_combos", nod=samples, strain=config["STRAIN"]),
+#  COMBINATION_CLASS_COUNT = expand("ma/{strain}/{nod}/{nod}.combos_txt", nod=samples, strain=config["STRAIN"]),
   PLOT_MA = expand("ma/{strain}/{nod}/{nod}.ma_plot.pdf", nod=samples, strain=config["STRAIN"]),
 
 ruleorder : filter_variants > collect_control_coordinates > genotype > allele_count > proportion_multiallelic > all_proportions > multiallelic_combinations > allelic_combination_grader
