@@ -30,6 +30,7 @@ rule all:
   PROXIMAL_VARIANT_MPILEUP = expand("ma/{strain}/{nod}/{nod}.prox_mpileup", nod=samples, strain=config["STRAIN"]),
   ALLELIC_COMBINATINS = expand("ma/{strain}/{nod}/{nod}.MA_combos", nod=samples, strain=config["STRAIN"]),
   COMBINATION_CLASS_COUNT = expand("ma/{strain}/{nod}/{nod}.combos_txt", nod=samples, strain=config["STRAIN"]),
+  PLOT_MA = expand("ma/{strain}/{nod}/{nod}.ma_plot.pdf", nod=samples, strain=config["STRAIN"]),
 
 ruleorder : filter_variants > collect_control_coordinates > genotype > allele_count > proportion_multiallelic > all_proportions > multiallelic_combinations > allelic_combination_grader
 
@@ -94,13 +95,16 @@ rule all_proportions:
   """ cat {input} > {output} """
 
 rule multiallelic_combinations:
+ input:
+  ALLELE_COUNT_BED = "ma/{strain}/{nod}/{nod}.allele_count_bed",
+  VARIANT_BED = "ma/{strain}/{nod}/{nod}.variant_bed"
  params:
   GENOME = config["GENOME"],
   BAM = lambda wildcards : sample_linked_bams[wildcards.nod]
  output:
   PROXIMAL_VARIANTS = "ma/{strain}/{nod}/{nod}.prox_pos",
   PROXIMAL_VARIANT_MPILEUP = "ma/{strain}/{nod}/{nod}.prox_mpileup",
-  ALLELIC_COMBINATINS = "ma/{strain}/{nod}/{nod}.MA_combos"
+  ALLELIC_COMBINATIONS = "ma/{strain}/{nod}/{nod}.MA_combos"
  shell:
   """bin/combo_validation.sh {wildcards.strain} {params.BAM} {wildcards.nod} {params.GENOME} """
 
@@ -112,3 +116,17 @@ rule allelic_combination_grader:
   IND_COMBOS = "ma/{strain}/{nod}/{nod}.combos_txt",
  shell:
   """ VAR=$(egrep $'\t100\t|\t111\t|\t101\t|\t110\t' {input.MA_COMBINATIONS} | awk '{{if ($5 <=150) {{print $0}}}}' | awk '{{if ($5 >=3) {{print $0}}}}' | awk -F"\t" '{{print $2" "$4" "$8}}' | awk '{{ gsub("[(),0-9\\047 ]","",$0); print $0 }}'| sed 's/.\{{2\}}/&,/g'| sed 's/./&,/1'| sed -r 's/,/ /' | sed -r 's/,/ /' | sed 's/,$//g' | python bin/allelic_combination_grader.py | cat - bin/allelic_combination_grades.txt | sed '/^$/d' | sort -k2,2 | uniq -c | egrep -v " 0$" | awk '{{print $1}}' | tr '\n' ' ' | awk '{{print $1-1"\t"$2-1"\t"$3-1"\t"$4-1"\t"$5-1"\t"(($3-1)+($4-1)+($5-1))/(($1-1)+($2-1)+($3-1)+($4-1)+($5-1))}}') ; VAR2=$(grep '{wildcards.nod} ' {input.MAP} | awk '{{print $4}}') ; echo {wildcards.nod} $VAR $VAR2 | awk -F" " '{{ if ($7 != -1) print $0}}' > {output.IND_COMBOS} """
+
+rule multiallelism_SCE:
+ input:
+  STRAIN_BED = "bin/{strain}_chr.bed",
+  ALLELE_COUNT_BED = "ma/{strain}/{nod}/{nod}.allele_count_bed"
+ output:
+  PLOT_MA = "ma/{strain}/{nod}/{nod}.ma_plot.pdf",
+  FNOD_BED = "ma/{strain}/{nod}/{nod}.fnod_bed",
+  SCE_BED = "ma/{strain}/{nod}/{nod}.sce_bed"
+ params:
+  PATH_TO_FNOD = config["PATH_TO_FNOD"],
+  PATH_TO_DRCR = config["PATH_TO_DRCR"]
+ shell:
+  """ SCE_multiallelism.sh bin/{wildcards.strain}_chr.bed {wildcards.strain} {wildcards.nod} {params.PATH_TO_FNOD} {params.PATH_TO_DRCR}"""
