@@ -26,6 +26,6 @@ then
  X=$GENOME_LENGTH awk '{$4 = $3 ;$5 = $3; total += $4; $4 = ((total-($3/2))/ENVIRON["X"])/2 ; total += $5; $5 = (total/ENVIRON["X"])/2}1' $CHR_BED > bin/${STRAIN}_chr_prop
 fi
 
-unset VAR && unset VAR2 && unset GENOME_LENGTH
+unset VAR1 && unset VAR2 && unset VAR3 && unset VAR4 && unset VAR5 && unset GENOME_LENGTH
 
 Rscript --vanilla ./bin/MA_SCE_plot.R ${STRAIN} ${NOD} 
