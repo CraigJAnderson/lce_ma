@@ -1,1 +1,0 @@
- cat geno/c3h/93133_N1_arc_filtered.nodMat geno/c3h/89985_N1_arc_filtered.nodMat | awk -F",|_" '{print $1"	"$2"	"$2+1}' | sort -k 1,1 -k2,2n > ma/c3h/93133_N1/93133_N1.bed ;  bin/map_props.sh 93133_N1 c3h ma/c3h/c3h_den.arc_filtered_control_sites.bed.gz ma/c3h/93133_N1/93133_N1.control_map ma/c3h/93133_N1/93133_N1.map 
