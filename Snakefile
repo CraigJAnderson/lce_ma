@@ -1,7 +1,7 @@
 #snakefile: /hps/nobackup2/flicek/user/cander21/dojo/SM/snakefile
 #import numpy as np
 
-configfile : "config.yaml"
+configfile : "config_c3h.yaml"
 
 #include : "rules/test.smk"
 
