@@ -23,6 +23,7 @@ rule all:
   ALL_PROPORTIONS = expand("ma/{strain}/{strain}.multi_allelic_proportions", strain=config["STRAIN"]),
   ALLELIC_COMBINATIONS = expand("ma/{strain}/{nod}/{nod}.MA_combos", nod=samples, strain=config["STRAIN"]),
   PLOT_MA = expand("ma/{strain}/{nod}/{nod}.ma_plot.pdf", nod=samples, strain=config["STRAIN"]),
+  PLOT_TIMING = expand("ma/{strain}/{strain}.timing_plot.pdf", strain=config["STRAIN"])
 
 ruleorder : filter_variants > collect_control_coordinates > genotype > allele_count > proportion_multiallelic > all_proportions > multiallelic_combinations > allelic_combination_grader
 
@@ -123,3 +124,20 @@ rule multiallelism_SCE:
   PATH_TO_DRCR = config["PATH_TO_DRCR"]
  shell:
   """ bin/MA_SCE_plot.sh bin/{wildcards.strain}_chr.bed {wildcards.strain} {wildcards.nod} {params.PATH_TO_FNOD} {params.PATH_TO_DRCR}"""
+
+rule calc_timing_props:
+ input:
+  TUMOUR_INFO = "/hps/nobackup2/flicek/user/mst/lce/nodules/{strain}.tumourCollateInfo.tab",
+  SCE_MA2 = "ma/{strain}/{nod}/{nod}.sce_bed",
+ output:
+  "ma/{strain}/{nod}/{nod}.timing"
+ shell:
+  """ bin/calc_timing_props.sh {wildcards.strain} {wildcards.nod} {input.TUMOUR_INFO} """
+
+rule plot_driver_times:
+ input:
+  expand("ma/{strain}/{nod}/{nod}.timing", nod=samples , strain=config["STRAIN"])
+ output:
+  "ma/{strain}/{strain}.timing_plot.pdf"
+ shell:
+  """ cat {input} | Rscript --vanilla bin/plot_driver_times.R {wildcards.strain} """
