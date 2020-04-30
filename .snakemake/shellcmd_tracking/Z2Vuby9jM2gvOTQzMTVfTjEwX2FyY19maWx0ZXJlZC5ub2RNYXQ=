@@ -1,0 +1,1 @@
+grep -e ',94315_N10,' /hps/nobackup2/flicek/user/cander21/lce20191105/geno/c3h.projectedFilteredMu.tab | awk -F, '{if (($19 == "") && ($20 == 0) && ($34 == "" || $34 > 1e-4 ) && ($10 != "")) print $0}' > geno/c3h/94315_N10_arc_filtered.nodMat 

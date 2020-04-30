@@ -19,7 +19,7 @@ sample_linked_bams = dict(zip(samples, bam_names))
 rule all:
  input: 
   CONTROL_POS = expand("ma/{strain}/{strain}.arc_filtered_control_sites.pos", strain=config["STRAIN"]),
-  CONTROL_BED_GZ = expand("ma/{strain}/{strain}.arc_filtered_control_sites.bed.gz", strain=config["STRAIN"]),
+  CONTROL_BED = expand("ma/{strain}/{strain}.arc_filtered_control_sites.bed", strain=config["STRAIN"]),
   ALL_PROPORTIONS = expand("ma/{strain}/{strain}.multi_allelic_proportions", strain=config["STRAIN"]),
   ALLELIC_COMBINATIONS = expand("ma/{strain}/{nod}/{nod}.MA_combos", nod=samples, strain=config["STRAIN"]),
   PLOT_MA = expand("ma/{strain}/{nod}/{nod}.ma_plot.pdf", nod=samples, strain=config["STRAIN"]),
@@ -41,11 +41,9 @@ rule collect_control_coordinates:
  output:
   CONTROL_POS = "ma/{strain}/{strain}.arc_filtered_control_sites.pos",
   CONTROL_BED = "ma/{strain}/{strain}.arc_filtered_control_sites.bed",
-  CONTROL_BED_GZ = "ma/{strain}/{strain}.arc_filtered_control_sites.bed.gz"
  shell:
   """ cat {input.VARIANTS} | awk '{{print $1"\t"$2}}' FS="[_,]" | sort -k 1,1 -k2,2n -u > {output.CONTROL_POS} ; """
   """ cat {input.VARIANTS} | awk '{{print $1"\t"$2"\t"$2+1}}' FS="[_,]" | sort -k 1,1 -k2,2n -u > {output.CONTROL_BED} ; """
-  """ bgzip -c {output.CONTROL_BED} > {output.CONTROL_BED_GZ} """
 
 rule genotype:
  input:
@@ -71,7 +69,7 @@ rule proportion_multiallelic:
   ALLELE_COUNT = "ma/{strain}/{nod}/{nod}.allele_count_bed",
   MPILEUP = "ma/{strain}/{nod}/{nod}.mpileup",
   VARIANTS = "geno/{strain}/{nod}_arc_filtered.nodMat",
-  CONTROL_SITES = "ma/{strain}/{strain}.arc_filtered_control_sites.bed.gz"
+  CONTROL_SITES = "ma/{strain}/{strain}.arc_filtered_control_sites.bed"
  output:
   VARIANT_BED = "ma/{strain}/{nod}/{nod}.variant_bed",
   PROPORTION_MULTIALLELIC = "ma/{strain}/{nod}/{nod}.map",

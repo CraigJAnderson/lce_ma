@@ -13,7 +13,7 @@ MAS=$(cat ma/${STRAIN}/${NOD}/${NOD}.allele_count_bed | bedtools intersect -a st
 SUM=$((BAS+MAS))
 PROPM=$(echo $MAS | X=$SUM awk -F"\t" '{print ($1/ENVIRON["X"])}')
 
-zcat $ALLSITES | bedtools subtract -a stdin -b ma/${STRAIN}/${NOD}/${NOD}.variant_bed > ma/${STRAIN}/${NOD}/tmp.bed
+cat $ALLSITES | bedtools subtract -a stdin -b ma/${STRAIN}/${NOD}/${NOD}.variant_bed > ma/${STRAIN}/${NOD}/tmp.bed
 
 for x in {1..100} 
  do
