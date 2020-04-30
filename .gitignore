@@ -1,5 +1,5 @@
-geno/
-ma/
+geno
+ma
 log.error
 log.out
-.snakemake/
+.snakemake
