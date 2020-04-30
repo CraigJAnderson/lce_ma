@@ -2,3 +2,4 @@ geno/
 ma/
 log.error
 log.out
+.snakemake/
