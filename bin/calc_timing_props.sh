@@ -1,11 +1,11 @@
 #/!/bin/sh
-calc_timing_props.sh
-STRAIN = $1
-NOD = $2
-TUMOUR_INFO = $3 ##/hps/nobackup2/flicek/user/mst/lce/nodules/c3h.tumourCollateInfo.tab
+#calc_timing_props.sh
+STRAIN=$1
+NOD=$2
+TUMOUR_INFO=$3 ##/hps/nobackup2/flicek/user/mst/lce/nodules/c3h.tumourCollateInfo.tab
 
-MA=$(awk -F" " '{ if ($7 >= 0.04) print $0}' ma/${STRAIN}/${NOD}/${NOD}.sce2_bed | wc -l)
-BA=$(awk -F" " '{ if ($7 < 0.04) print $0}' ma/${STRAIN}/${NOD}/${NOD}.sce2_bed | wc -l)
+MA=$(awk -F" " '{ if ($7 >= 0.04) print $0}' ma/${STRAIN}/${NOD}/${NOD}.sce_bed2 | wc -l)
+BA=$(awk -F" " '{ if ($7 < 0.04) print $0}' ma/${STRAIN}/${NOD}/${NOD}.sce_bed2 | wc -l)
 SUM=$((BA+MA))
 PROPM=$(echo $MA | X=$SUM awk -F"\t" '{print ($1/ENVIRON["X"])}')
 if [ $PROPM == 1.0 ] ; then VAR1=1 ; else VAR1=0 ; fi

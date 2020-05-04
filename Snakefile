@@ -138,4 +138,4 @@ rule plot_driver_times:
  output:
   "ma/{strain}/{strain}.timing_plot.pdf"
  shell:
-  """ cat {input} | Rscript --vanilla bin/plot_driver_times.R {wildcards.strain} """
+  """ cat {input} | sed 's/ /\t/g' | Rscript --vanilla bin/plot_driver_times.R {wildcards.strain} """
