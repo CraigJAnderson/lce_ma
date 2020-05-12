@@ -125,7 +125,7 @@ rule multiallelism_SCE:
 
 rule calc_timing_props:
  input:
-  TUMOUR_INFO = "/hps/nobackup2/flicek/user/mst/lce/nodules/{strain}.tumourCollateInfo.tab",
+  TUMOUR_INFO = "/hps/nobackup2/flicek/user/cander21/lce20191105/samples/allStrainsDRIVERS.LCE_isdWGSs.tab",
   SCE_MA2 = "ma/{strain}/{nod}/{nod}.sce_bed",
  output:
   "ma/{strain}/{nod}/{nod}.timing"
