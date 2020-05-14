@@ -8,6 +8,7 @@ The idea is that one can provide a different config file for independent cohorts
 
 
 Output files and fields:
+<pre>
 <sample>.map
 The counts of each of the types of variants in a sample, reporting the total proportion of multi-allelic variants, as well as the null estimate. This is based upon the mean of 100 random draws of variant positions seen in the population, exclusing sample specific variant sites
 nodule,MA.count,BA.count,proportion.multiallelic.sites,mean.proportion.control.sites.with.unexpected.additional.allele
@@ -62,3 +63,4 @@ chromosome,start.bp,end.bp,chromosome,segment.specific.identifier,strand.asymmet
 the proportion of segments that are multiallelic is used to infer the generation after exposure that a clonal population initiated tumouregenesis. I provide annotations to easily perform a Fisher's exact test to see if it's earlier or later than expected. We set the threshold proportion for calling a segment multi-allelic at 0.04
 nodule,proportion.multialleic.segments,timing.subgroup[1=early,0=late],drivers,braf[1=true,0=false],egfr[1=true,0=false],hras[1=true,0=false],kras[1=true,0=false]
 <sample> 0.638889 0     Kras;Ctnnb1     0       0       0       1
+</pre>
