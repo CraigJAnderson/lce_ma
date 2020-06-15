@@ -1,6 +1,6 @@
 SAMPLE_LIST : "car_bam_name.txt"
-STRAIN : "car"
-VARIANTS : "/hps/nobackup2/flicek/user/cander21/lce20191105/geno/car.projectedFilteredMu.tab"
+STRAIN : "caroli"
+VARIANTS : "/hps/nobackup2/flicek/user/cander21/lce20191105/geno/caroli.projectedFilteredMu.tab"
 PATH_TO_BAM : "/nfs/leia/research/flicek/user/fnc-odompipe/lce-collaboration/repository/merged_alignments/alignments_20171018/"
 GENOME : "/nfs/leia/research/flicek/user/fnc-odompipe/lce-collaboration/genome_metadata/genomes/mus_caroli/CAROLI_EiJ_v1.1_S288C/CAROLI_EiJ_v1.1_S288C.fa"
 PATH_TO_FNOD : "/hps/nobackup2/flicek/user/mst/lce/nodules"

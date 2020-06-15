@@ -1,4 +1,4 @@
-SAMPLE_LIST : "c3h_bam_name.txt"
+SAMPLE_LIST : "c3h_unfinished.txt"
 STRAIN : "c3h"
 VARIANTS : "/hps/nobackup2/flicek/user/cander21/lce20191105/geno/c3h.projectedFilteredMu.tab"
 PATH_TO_BAM : "/nfs/leia/research/flicek/user/fnc-odompipe/lce-collaboration/repository/merged_alignments/alignments_20171018/"
