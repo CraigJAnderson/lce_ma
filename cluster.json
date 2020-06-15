@@ -55,9 +55,9 @@
 
  "multiallelic_combinations":
  {
-  "memory" : "10000",
+  "memory" : "12000",
   "run_time" : "06:00",
-  "resources": "\"rusage[mem=10000]\"",
+  "resources": "\"rusage[mem=12000]\"",
   "output" : "/hps/nobackup2/flicek/user/cander21/dojo/SM/logs/",
   "error" : "/hps/nobackup2/flicek/user/cander21/dojo/SM/logs/"
  }
