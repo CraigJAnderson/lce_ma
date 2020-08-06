@@ -1,3 +1,5 @@
+The following was used to calculate multi-allelism in WGS from liver nodules derived from C3H mice exposed to a single dose of diethylnitrosamine: https://www.nature.com/articles/s41586-020-2435-1
+
 How to run on LSF Scheduler
 
 <pre>
